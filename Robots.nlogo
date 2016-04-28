@@ -12,6 +12,13 @@ breed [
 pieces-own [
   x y      ;; these are the piece's offsets relative to turtle 0
 ]
+breed [
+  robots robot ;; robot
+]
+
+robots-own [
+  robotpieces
+]
 
 ;;;;;;;;;;;;;
 ;;; Notes ;;;
@@ -23,8 +30,8 @@ pieces-own [
 to setup
   clear-all
   set-default-shape turtles "square big"
-  new-piece
-  new-piece
+  new-robot
+  new-robot
 
   set sim-over? FALSE
   reset-ticks
@@ -34,22 +41,22 @@ end
 ;;; Interface Buttons ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to rotate-me-right [ theturtle ] ;; Piece Procedure
+to rotate-me-right [ therobot ] ;; Piece Procedure
   let oldx x
   let oldy y
   set x oldy
   set y (- oldx)
-  set xcor ([xcor] of theturtle) + x
-  set ycor ([ycor] of theturtle) + y
+  set xcor ([xcor] of therobot) + x
+  set ycor ([ycor] of therobot) + y
 end
 
-to rotate-me-left [ theturtle ] ;; Piece Procedure
+to rotate-me-left [ therobot ] ;; Piece Procedure
   let oldx x
   let oldy y
   set x (- oldy)
   set y oldx
-  set xcor ([xcor] of theturtle) + x
-  set ycor ([ycor] of theturtle) + y
+  set xcor ([xcor] of therobot) + x
+  set ycor ([ycor] of therobot) + y
 end
 
 to shift-right
@@ -106,21 +113,30 @@ end
 ;;; Pieces Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to new-piece
-  let thenewturtle turtle 0
-  create-turtles 1 [
+to new-robot
+  let thenewrobot robot 0
+  create-robots 1 [
     set xcor random 5
     set ycor random 5
-    set thenewturtle self
+    set thenewrobot self
+  ]
+
+  ask thenewrobot [
+    set robotpieces []
   ]
 
   let new-shape next-shape
   set next-shape random 7
   create-pieces 4
-  [ setup-piece new-shape thenewturtle]
+  [
+    setup-piece new-shape thenewrobot
+    ask thenewrobot [
+      set robotpieces lput myself robotpieces
+    ]
+  ]
 end
 
-to setup-piece [s theturtle]  ;; Piece Procedure
+to setup-piece [s therobot]  ;; Piece Procedure
   if (s = 0) [ setup-l  set color blue   ]
   if (s = 1) [ setup-l  set color red    ]
   if (s = 2) [ setup-l  set color yellow ]
@@ -128,8 +144,8 @@ to setup-piece [s theturtle]  ;; Piece Procedure
   if (s = 4) [ setup-l  set color orange ]
   if (s = 5) [ setup-l  set color sky    ]
   if (s = 6) [ setup-l  set color violet ]
-  setxy ([xcor] of theturtle) + x
-        ([ycor] of theturtle) + y
+  setxy ([xcor] of therobot) + x
+        ([ycor] of therobot) + y
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -143,12 +159,13 @@ end
 ;; 201
 ;; 3
 to setup-l ;;Piece Procedure
+  print(who)
   if (who mod 4 = 1) [ set x  1 set y  0 ]
   if (who mod 4 = 2) [ set x -1 set y  0 ]
   if (who mod 4 = 3) [ set x -1 set y -1 ]
 end
 
-; See Info tab for full copyright and license.
+; See Info tab for full copyright and license.`
 @#$#@#$#@
 GRAPHICS-WINDOW
 183
