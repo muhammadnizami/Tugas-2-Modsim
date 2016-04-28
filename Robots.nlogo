@@ -222,8 +222,8 @@ end
 to new-robot
   let thenewrobot robot 0
   create-robots 1 [
-    set xcor random 5
-    set ycor random 5
+    set xcor ( random ( max-pxcor - min-pxcor - 2 ) ) + min-pxcor + 1
+    set ycor ( random ( max-pycor - min-pycor - 2 ) ) + min-pycor + 1
     set thenewrobot self
   ]
   ask thenewrobot [
