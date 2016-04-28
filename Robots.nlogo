@@ -124,7 +124,19 @@ to AI-move
   if not berhasil-gerak
   [
     ifelse rotate-right-clear? [rotate-right] ;;harusnya di sini backtrack
-    [if rotate-left-clear? [rotate-left]]
+    [ifelse rotate-left-clear? [rotate-left]
+      [
+        foreach [ [ 0 1 ] [ 0 -1 ] [ 1 0 ] [ -1 0 ] ]
+        [
+          if clear-at? item 0 ? item 1 ? and not berhasil-gerak
+          [
+            shift ?
+            set berhasil-gerak true
+          ]
+        ]
+
+      ]
+    ]
   ]
 
 end
