@@ -304,7 +304,8 @@ end
 ;;; Overlap prevention Reporters ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p]  ;; p is a patch
-  if pcolor = obstacle-color or pcolor = obstacle-border-color [report false]
+  if [pcolor] of p = obstacle-color [report false]
+  if [pcolor] of p = obstacle-border-color [report false]
   if p = nobody [ report false ]
   report (not any? blocks-on p) and ([pcolor] of p != gray)
 end
@@ -312,7 +313,7 @@ end
 to-report clear-at? [xoff yoff]
   if xoff + xcor < min-pxcor or xoff + xcor > max-pxcor or yoff + ycor < min-pycor or yoff + ycor > max-pycor [ report false ]
   let thisrobot self
-  report all? pieces with [owner = self] [clear? patch-at xoff yoff]
+  report all? pieces with [owner = thisrobot] [clear? patch-at xoff yoff]
 end
 
 to-report rotate-left-clear?
