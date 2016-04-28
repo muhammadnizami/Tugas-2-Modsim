@@ -1,6 +1,12 @@
 globals [
   next-shape
   sim-over?
+
+  goal-patch
+  num-robots
+  obstacle-color
+  obstacle-border-color
+  goal-color
 ]
 breed [
   pieces piece ;; pieces of the robot
@@ -21,6 +27,13 @@ robots-own [
   robotpieces
 ]
 
+patches-own
+[
+  parent-patch
+  f
+  g
+]
+
 ;;;;;;;;;;;;;
 ;;; Notes ;;;
 ;;;;;;;;;;;;;
@@ -33,10 +46,53 @@ to setup
   set-default-shape turtles "square big"
   new-robot
   new-robot
+  new-robot
+  new-robot
+
+  set obstacle-color white
+  set obstacle-border-color brown
+  set goal-color red
 
   set sim-over? FALSE
   reset-ticks
 end
+
+to draw-obstacle
+  if mouse-inside?
+  [
+    if mouse-down?
+    [
+      if ( [pcolor] of patch mouse-xcor mouse-ycor = black ) or ( [pcolor] of patch mouse-xcor mouse-ycor = obstacle-color )
+      [
+        ask patch mouse-xcor mouse-ycor
+        [
+          set pcolor obstacle-border-color
+          ask neighbors with [ [pcolor] of self = black ] [ set pcolor obstacle-color ]
+        ]
+      ]
+    ]
+  ]
+  tick
+end
+
+to draw-goal
+  if mouse-inside?
+  [
+    if mouse-down?
+    [
+      if ( [pcolor] of patch mouse-xcor mouse-ycor = black )
+      [
+        ask patch mouse-xcor mouse-ycor
+        [
+          set pcolor goal-color
+          set goal-patch patch mouse-xcor mouse-ycor
+        ]
+      ]
+    ]
+  ]
+  tick
+end
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Rotate Robot Procedures ;;;
@@ -219,10 +275,10 @@ end
 GRAPHICS-WINDOW
 183
 10
-478
-416
-9
-12
+688
+536
+16
+16
 15.0
 1
 10
@@ -233,10 +289,10 @@ GRAPHICS-WINDOW
 0
 0
 1
--9
-9
--12
-12
+-16
+16
+-16
+16
 1
 1
 0
@@ -261,10 +317,10 @@ NIL
 1
 
 BUTTON
-93
-145
-155
+32
 178
+94
+211
 Play
 play
 T
@@ -278,13 +334,30 @@ NIL
 0
 
 BUTTON
-82
-208
-145
-241
-test
-testrobot
+105
+179
+180
+212
+obstacle
+draw-obstacle
+T
+1
+T
+OBSERVER
 NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+103
+145
+179
+178
+goal
+draw-goal
+T
 1
 T
 OBSERVER
