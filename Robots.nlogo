@@ -199,8 +199,12 @@ to hitung-medan-jarak-tetangga
                    and pcolor != obstacle-color
                    and pcolor != obstacle-border-color] [
 
-      set medan-jarak medan-jarak-tetangga
-      hitung-medan-jarak-tetangga
+      if count neighbors with [pcolor != obstacle-color
+                   and pcolor != obstacle-border-color] >= 3 [
+
+        set medan-jarak medan-jarak-tetangga
+        hitung-medan-jarak-tetangga
+      ]
     ]
 end
 
