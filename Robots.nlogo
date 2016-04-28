@@ -304,9 +304,9 @@ end
 ;;; Overlap prevention Reporters ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p]  ;; p is a patch
+  if p = nobody [ report false ]
   if [pcolor] of p = obstacle-color [report false]
   if [pcolor] of p = obstacle-border-color [report false]
-  if p = nobody [ report false ]
   report (not any? blocks-on p) and ([pcolor] of p != gray)
 end
 
