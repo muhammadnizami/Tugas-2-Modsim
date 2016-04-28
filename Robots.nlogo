@@ -74,6 +74,7 @@ to draw-obstacle
     ]
   ]
   tick
+  hitung-medan-jarak
 end
 
 to draw-goal
@@ -92,6 +93,55 @@ to draw-goal
     ]
   ]
   tick
+  hitung-medan-jarak
+end
+
+to go
+ ask robots[
+   AI-move
+ ]
+ tick
+end
+
+;;;;;;;;;;
+;;; AI ;;;
+;;;;;;;;;;
+to AI-move
+  let move-offset offset-dengan-medan-jarak-terkecil
+  ifelse (clear-at? item 0 move-offset item 1 move-offset)
+  [
+    shift move-offset
+  ]
+  [
+    rotate-right ;;harusnya di sini backtrack
+  ]
+
+end
+
+to-report offset-dengan-medan-jarak-terkecil
+  let kandidat-offset [ [ 0 1 ] [ 0 -1 ] [ 1 0 ] [ -1 0 ] ]
+
+  let min-i 0
+  let min-dist 2 ^ 32
+  let i 0
+  let i-dist 0
+  let turtle-xcor xcor
+  let turtle-ycor ycor
+  while [i < 4]
+  [
+    ask patches with [ pxcor = turtle-xcor + item 0 item i kandidat-offset
+                       and pycor = turtle-ycor + item 1 item i kandidat-offset]
+    [
+      set i-dist medan-jarak
+    ]
+    if i-dist < min-dist[
+      set min-i i
+      set min-dist i-dist
+    ]
+    set i i + 1
+  ]
+  report item min-i kandidat-offset
+
 end
 
 
@@ -216,6 +266,20 @@ to shift-up
     ]
 end
 
+to shift [offset]
+  if (clear-at? item 0 offset item 1 offset)
+  [
+    set xcor xcor + item 0 offset
+    set ycor ycor + item 1 offset
+      let thisrobot self
+      ask pieces with [owner = thisrobot][
+        set xcor xcor + item 0 offset
+        set ycor ycor + item 1 offset
+        ]
+
+  ]
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Runtime Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -230,6 +294,7 @@ end
 ;;; Overlap prevention Reporters ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to-report clear? [p]  ;; p is a patch
+  if pcolor = obstacle-color or pcolor = obstacle-border-color [report false]
   if p = nobody [ report false ]
   report (not any? blocks-on p) and ([pcolor] of p != gray)
 end
@@ -353,8 +418,8 @@ BUTTON
 178
 94
 211
-Play
-play
+Go
+go
 T
 1
 T
@@ -390,23 +455,6 @@ BUTTON
 goal
 draw-goal
 T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-91
-264
-263
-297
-hitung-medan-jarak
-test-medan-jarak
-NIL
 1
 T
 OBSERVER
