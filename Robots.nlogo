@@ -107,19 +107,31 @@ end
 ;;; AI ;;;
 ;;;;;;;;;;
 to AI-move
-  let move-offset offset-dengan-medan-jarak-terkecil
-  ifelse (clear-at? item 0 move-offset item 1 move-offset)
+
+  ;;get candidate move directions
+  let kandidat-offset offsets-dengan-medan-jarak-terkecil
+
+  ;;coba gerak ke sana apakah bisa
+  let berhasil-gerak false
+  foreach kandidat-offset
   [
-    shift move-offset
+    if clear-at? item 0 ? item 1 ? and not berhasil-gerak
+    [
+      shift ?
+      set berhasil-gerak true
+    ]
   ]
+  if not berhasil-gerak
   [
-    rotate-right ;;harusnya di sini backtrack
+    ifelse rotate-right-clear? [rotate-right] ;;harusnya di sini backtrack
+    [if rotate-left-clear? [rotate-left]]
   ]
 
 end
 
-to-report offset-dengan-medan-jarak-terkecil
+to-report offsets-dengan-medan-jarak-terkecil
   let kandidat-offset [ [ 0 1 ] [ 0 -1 ] [ 1 0 ] [ -1 0 ] ]
+  let kandidat-dist [ 0 0 0 0 ]
 
   let min-i 0
   let min-dist 2 ^ 32
@@ -139,6 +151,7 @@ to-report offset-dengan-medan-jarak-terkecil
                        and pycor = y-i]
     [
       set i-dist medan-jarak
+      set kandidat-dist replace-item i kandidat-dist i-dist
     ]
     if i-dist < min-dist[
       set min-i i
@@ -146,7 +159,16 @@ to-report offset-dengan-medan-jarak-terkecil
     ]
     set i i + 1
   ]
-  report item min-i kandidat-offset
+
+  let retval []
+  set i 0
+  while [i < 4]
+  [
+    if item i kandidat-dist = min-dist
+    [set retval lput item i kandidat-offset retval ]
+    set i i + 1
+  ]
+  report retval
 
 end
 
