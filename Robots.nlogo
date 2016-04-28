@@ -11,6 +11,7 @@ breed [
 
 pieces-own [
   x y      ;; these are the piece's offsets relative to turtle 0
+  owner
 ]
 breed [
   robots robot ;; robot
@@ -37,46 +38,94 @@ to setup
   reset-ticks
 end
 
-;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Interface Buttons ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Rotate Robot Procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to testrobot
+  ask one-of robots[
+    let a random 6
+    if a = 1 [shift-up]
+    if a = 2 [shift-down]
+    if a = 3 [shift-left]
+    if a = 4 [shift-right]
+    if a = 5 [rotate-right]
+    if a = 6 [rotate-left]
+  ]
+end
 
-to rotate-me-right [ therobot ] ;; Piece Procedure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Rotate Robot Procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to rotate-right ;; Robot Procedure
+  let thisrobot self
+  ask pieces with [owner = thisrobot] [
+   rotate-me-right
+  ]
+end
+
+to rotate-left ;; Robot Procedure
+  let thisrobot self
+  ask pieces with [owner = thisrobot] [
+   rotate-me-left
+  ]
+end
+
+to rotate-me-right ;; Piece Procedure
   let oldx x
   let oldy y
   set x oldy
   set y (- oldx)
-  set xcor ([xcor] of therobot) + x
-  set ycor ([ycor] of therobot) + y
+  set xcor ([xcor] of owner) + x
+  set ycor ([ycor] of owner) + y
 end
 
-to rotate-me-left [ therobot ] ;; Piece Procedure
+to rotate-me-left ;; Piece Procedure
   let oldx x
   let oldy y
   set x (- oldy)
   set y oldx
-  set xcor ([xcor] of therobot) + x
-  set ycor ([ycor] of therobot) + y
+  set xcor ([xcor] of owner) + x
+  set ycor ([ycor] of owner) + y
 end
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Shift Robot Procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to shift-right
   if (clear-at? 1 0)
-    [ ask pieces [ set xcor xcor + 1 ] ]
+    [
+      set xcor xcor + 1
+      let thisrobot self
+      ask pieces with [owner = thisrobot] [ set xcor xcor + 1 ]
+    ]
 end
 
 to shift-left
   if (clear-at? -1 0)
-    [ ask pieces [ set xcor xcor - 1 ] ]
+    [
+      set xcor xcor - 1
+      let thisrobot self
+      ask pieces with [owner = thisrobot] [ set xcor xcor - 1 ]
+    ]
 end
 
 to shift-down
   if (clear-at? 0 -1)
-    [ ask pieces [ set ycor ycor - 1 ] ]
+    [
+      set ycor ycor - 1
+      let thisrobot self
+      ask pieces with [owner = thisrobot][ set ycor ycor - 1 ]
+    ]
 end
 
 to shift-up
   if (clear-at? 0 1)
-    [ ask pieces [ set ycor ycor + 1 ] ]
+    [
+      set ycor ycor + 1
+      let thisrobot self
+      ask pieces with [owner = thisrobot][ set ycor ycor + 1 ]
+    ]
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -98,7 +147,8 @@ to-report clear? [p]  ;; p is a patch
 end
 
 to-report clear-at? [xoff yoff]
-  report all? pieces [clear? patch-at xoff yoff]
+  let thisrobot self
+  report all? pieces with [owner = self] [clear? patch-at xoff yoff]
 end
 
 to-report rotate-left-clear?
@@ -120,7 +170,6 @@ to new-robot
     set ycor random 5
     set thenewrobot self
   ]
-
   ask thenewrobot [
     set robotpieces []
   ]
@@ -130,6 +179,7 @@ to new-robot
   create-pieces 4
   [
     setup-piece new-shape thenewrobot
+    set owner thenewrobot
     ask thenewrobot [
       set robotpieces lput myself robotpieces
     ]
@@ -159,7 +209,6 @@ end
 ;; 201
 ;; 3
 to setup-l ;;Piece Procedure
-  print(who)
   if (who mod 4 = 1) [ set x  1 set y  0 ]
   if (who mod 4 = 2) [ set x -1 set y  0 ]
   if (who mod 4 = 3) [ set x -1 set y -1 ]
@@ -227,6 +276,23 @@ P
 NIL
 NIL
 0
+
+BUTTON
+82
+208
+145
+241
+test
+testrobot
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
