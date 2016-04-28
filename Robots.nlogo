@@ -32,6 +32,7 @@ patches-own
   parent-patch
   f
   g
+  medan-jarak
 ]
 
 ;;;;;;;;;;;;;
@@ -93,6 +94,37 @@ to draw-goal
   tick
 end
 
+
+;;;;;;;;;;;;;;;;;;;
+;;; Medan Jarak ;;;
+;;;;;;;;;;;;;;;;;;;
+to test-medan-jarak
+  hitung-medan-jarak
+  ask patches[
+    set plabel medan-jarak
+  ]
+end
+
+to hitung-medan-jarak
+  ask patches[
+    set medan-jarak 2 ^ 32
+  ]
+  ask patches with [pcolor = goal-color] [
+    set medan-jarak 0
+    hitung-medan-jarak-tetangga
+  ]
+end
+
+to hitung-medan-jarak-tetangga
+    let medan-jarak-tetangga medan-jarak + 1
+    ask neighbors with [medan-jarak > medan-jarak-tetangga
+                   and pcolor != obstacle-color
+                   and pcolor != obstacle-border-color] [
+
+      set medan-jarak medan-jarak-tetangga
+      hitung-medan-jarak-tetangga
+    ]
+end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Rotate Robot Procedures ;;;
@@ -275,11 +307,11 @@ end
 GRAPHICS-WINDOW
 183
 10
-688
-536
+523
+371
 16
 16
-15.0
+10.0
 1
 10
 1
@@ -358,6 +390,23 @@ BUTTON
 goal
 draw-goal
 T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+91
+264
+263
+297
+hitung-medan-jarak
+test-medan-jarak
+NIL
 1
 T
 OBSERVER
