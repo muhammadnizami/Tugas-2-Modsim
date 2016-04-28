@@ -127,10 +127,16 @@ to-report offset-dengan-medan-jarak-terkecil
   let i-dist 0
   let turtle-xcor xcor
   let turtle-ycor ycor
+
+  let x-i 0
+  let y-i 0
   while [i < 4]
   [
-    ask patches with [ pxcor = turtle-xcor + item 0 item i kandidat-offset
-                       and pycor = turtle-ycor + item 1 item i kandidat-offset]
+    set x-i turtle-xcor + item 0 item i kandidat-offset
+    set y-i turtle-ycor + item 1 item i kandidat-offset
+    ask patches with [ x-i > min-pxcor and x-i < max-pxcor and y-i > min-pycor and y-i < max-pycor
+                       and pxcor = x-i
+                       and pycor = y-i]
     [
       set i-dist medan-jarak
     ]
@@ -196,16 +202,20 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to rotate-right ;; Robot Procedure
-  let thisrobot self
-  ask pieces with [owner = thisrobot] [
-   rotate-me-right
+  if rotate-right-clear? [
+    let thisrobot self
+    ask pieces with [owner = thisrobot] [
+      rotate-me-right
+    ]
   ]
 end
 
 to rotate-left ;; Robot Procedure
-  let thisrobot self
-  ask pieces with [owner = thisrobot] [
-   rotate-me-left
+  if rotate-left-clear? [
+    let thisrobot self
+    ask pieces with [owner = thisrobot] [
+      rotate-me-left
+    ]
   ]
 end
 
@@ -300,6 +310,7 @@ to-report clear? [p]  ;; p is a patch
 end
 
 to-report clear-at? [xoff yoff]
+  if xoff + xcor < min-pxcor or xoff + xcor > max-pxcor or yoff + ycor < min-pycor or yoff + ycor > max-pycor [ report false ]
   let thisrobot self
   report all? pieces with [owner = self] [clear? patch-at xoff yoff]
 end
