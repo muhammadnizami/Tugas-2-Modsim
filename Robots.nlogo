@@ -113,6 +113,8 @@ end
 ;;;;;;;;;;
 to AI-move
 
+  if not reached-goal
+  [
   ;;get candidate move directions
   let kandidat-offset offsets-dengan-medan-jarak-terkecil
 
@@ -147,6 +149,8 @@ to AI-move
   ask patch-here [
     set medan-jarak medan-jarak + 1 / count robots
   ]
+  ]
+
   ]
 
 end
