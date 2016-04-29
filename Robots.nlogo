@@ -146,7 +146,6 @@ to AI-move
   if not reached-goal [
   ask patch-here [
     set medan-jarak medan-jarak + 1 / count robots
-    set plabel medan-jarak
   ]
   ]
 
