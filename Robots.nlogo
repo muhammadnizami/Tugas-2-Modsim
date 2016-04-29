@@ -393,7 +393,18 @@ to-report clear? [p]  ;; p is a patch
   if p = nobody [ report false ]
   if [pcolor] of p = obstacle-color [report false]
   if [pcolor] of p = obstacle-border-color [report false]
-  report (not any? blocks-on p) and ([pcolor] of p != gray)
+  report (not any? blocks-on p) and ([pcolor] of p != gray) and not there-is-a-piece-of-another-robot p
+end
+
+to-report there-is-a-piece-of-another-robot [p]
+  let anotherpiece one-of pieces-on p
+  ifelse anotherpiece = nobody [ report false]
+  [
+    let theowner [owner] of anotherpiece
+    ifelse theowner = myself or [reached-goal] of theowner
+    [report false]
+    [report true]
+  ]
 end
 
 to-report clear-at? [xoff yoff]
