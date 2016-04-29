@@ -292,6 +292,7 @@ to shift-right
       let thisrobot self
       ask pieces with [owner = thisrobot] [ set xcor xcor + 1 ]
     ]
+    update-reached-goal-flag
 end
 
 to shift-left
@@ -303,6 +304,7 @@ to shift-left
       let thisrobot self
       ask pieces with [owner = thisrobot] [ set xcor xcor - 1 ]
     ]
+    update-reached-goal-flag
 end
 
 to shift-down
@@ -314,6 +316,7 @@ to shift-down
       let thisrobot self
       ask pieces with [owner = thisrobot][ set ycor ycor - 1 ]
     ]
+    update-reached-goal-flag
 end
 
 to shift-up
@@ -325,6 +328,7 @@ to shift-up
       let thisrobot self
       ask pieces with [owner = thisrobot][ set ycor ycor + 1 ]
     ]
+    update-reached-goal-flag
 end
 
 to shift [offset]
@@ -340,6 +344,7 @@ to shift [offset]
         set ycor ycor + item 1 offset
         ]
 
+      update-reached-goal-flag
   ]
 end
 
@@ -349,6 +354,15 @@ to increment-distances
   ]
 end
 
+to-report goal? [p]
+  report [pcolor] of p = goal-color
+end
+
+to update-reached-goal-flag
+  if goal? patch-at 0 0 [
+    set reached-goal TRUE
+  ]
+end
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Path Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;
