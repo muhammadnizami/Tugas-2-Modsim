@@ -25,6 +25,8 @@ breed [
 
 robots-own [
   robotpieces
+  distance-covered
+  reached-goal
 ]
 
 patches-own
@@ -45,6 +47,7 @@ patches-own
 to setup
   clear-all
   set-default-shape turtles "square big"
+
   new-robot
   new-robot
   new-robot
@@ -279,6 +282,7 @@ end
 ;;; Shift Robot Procedures ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 to shift-right
+  increment-distances
   if (clear-at? 1 0)
     [
       set xcor xcor + 1
@@ -288,6 +292,7 @@ to shift-right
 end
 
 to shift-left
+  increment-distances
   if (clear-at? -1 0)
     [
       set xcor xcor - 1
@@ -297,6 +302,7 @@ to shift-left
 end
 
 to shift-down
+  increment-distances
   if (clear-at? 0 -1)
     [
       set ycor ycor - 1
@@ -306,6 +312,7 @@ to shift-down
 end
 
 to shift-up
+  increment-distances
   if (clear-at? 0 1)
     [
       set ycor ycor + 1
@@ -315,6 +322,7 @@ to shift-up
 end
 
 to shift [offset]
+  increment-distances
   if (clear-at? item 0 offset item 1 offset)
   [
     set xcor xcor + item 0 offset
@@ -325,6 +333,12 @@ to shift [offset]
         set ycor ycor + item 1 offset
         ]
 
+  ]
+end
+
+to increment-distances
+  if not reached-goal[
+    set distance-covered distance-covered + 1
   ]
 end
 
@@ -372,6 +386,8 @@ to new-robot
     set xcor ( random ( max-pxcor - min-pxcor - 2 ) ) + min-pxcor + 1
     set ycor ( random ( max-pycor - min-pycor - 2 ) ) + min-pycor + 1
     set thenewrobot self
+    set distance-covered 0
+    set reached-goal FALSE
   ]
   ask thenewrobot [
     set robotpieces []
@@ -420,10 +436,10 @@ end
 ; See Info tab for full copyright and license.`
 @#$#@#$#@
 GRAPHICS-WINDOW
-183
-10
-523
-371
+254
+25
+594
+386
 16
 16
 10.0
@@ -513,6 +529,24 @@ NIL
 NIL
 NIL
 1
+
+PLOT
+31
+223
+231
+373
+distances
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" "ask robots [\n  create-temporary-plot-pen (word who)\n  set-plot-pen-color color\n  plotxy ticks distance-covered\n]"
+PENS
+"default" 1.0 0 -16777216 true "" ""
 
 @#$#@#$#@
 ## WHAT IS IT?
