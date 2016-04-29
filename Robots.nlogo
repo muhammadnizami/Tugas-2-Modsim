@@ -58,6 +58,8 @@ to setup
   set goal-color red
 
   set sim-over? FALSE
+
+  setup-drawlines
   reset-ticks
 end
 
@@ -285,6 +287,7 @@ to shift-right
   increment-distances
   if (clear-at? 1 0)
     [
+      draw-line-to-offset [1 0]
       set xcor xcor + 1
       let thisrobot self
       ask pieces with [owner = thisrobot] [ set xcor xcor + 1 ]
@@ -295,6 +298,7 @@ to shift-left
   increment-distances
   if (clear-at? -1 0)
     [
+      draw-line-to-offset [-1 0]
       set xcor xcor - 1
       let thisrobot self
       ask pieces with [owner = thisrobot] [ set xcor xcor - 1 ]
@@ -305,6 +309,7 @@ to shift-down
   increment-distances
   if (clear-at? 0 -1)
     [
+      draw-line-to-offset [0 -1]
       set ycor ycor - 1
       let thisrobot self
       ask pieces with [owner = thisrobot][ set ycor ycor - 1 ]
@@ -315,6 +320,7 @@ to shift-up
   increment-distances
   if (clear-at? 0 1)
     [
+      draw-line-to-offset [0 1]
       set ycor ycor + 1
       let thisrobot self
       ask pieces with [owner = thisrobot][ set ycor ycor + 1 ]
@@ -325,6 +331,7 @@ to shift [offset]
   increment-distances
   if (clear-at? item 0 offset item 1 offset)
   [
+    draw-line-to-offset offset
     set xcor xcor + item 0 offset
     set ycor ycor + item 1 offset
       let thisrobot self
@@ -340,6 +347,19 @@ to increment-distances
   if not reached-goal[
     set distance-covered distance-covered + 1
   ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;
+;;; Path Procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+to draw-line-to-offset [offset] ;;untuk dipanggil oleh robot
+                                                     ;;prekondisi: kedua patch bukan nobody
+  let xx xcor
+  let yy ycor
+  let xoff item 0 offset
+  let yoff item 1 offset
+  draw-line xx yy xx + xoff yy + yoff color
 end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -434,6 +454,65 @@ to setup-l ;;Piece Procedure
 end
 
 ; See Info tab for full copyright and license.`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;;;;;;;;;;;;;;;;
+;;; draw line;;;
+;;;;;;;;;;;;;;;;
+breed [
+  transparents transparent
+]
+
+to setup-drawlines
+
+  let a list-of-patches
+
+  foreach a [
+    create-transparents 1[
+      set xcor [pxcor] of ?
+      set ycor [pycor] of ?
+      hide-turtle
+    ]
+  ]
+end
+
+to-report list-of-patches
+  ; start a blank list
+
+  let mylist [ ]
+
+  ; ask your turtles to append themselves to that list.
+  ; "ask turtles" could be "ask any-turtle-set"
+
+  ask patches [ set mylist lput self mylist ]
+
+  report mylist
+end
+
+to draw-line [x1 y1 x2 y2 linecolor]
+  ask transparents with [xcor = x1 and ycor = y1][
+    create-links-with transparents with [xcor = x2 and ycor = y2] [
+      set color linecolor
+    ]
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 254
